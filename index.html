@@ -129,6 +129,20 @@ h2{font-size:clamp(1.5rem,4.5vw,1.9rem); line-height:1.15}
 .err{font-size:.82rem; color:var(--ink-2); margin-top:6px; min-height:1.1em}
 .secure{display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; font-size:.8rem; color:var(--muted)}
 
+/* Vídeo do resultado */
+.vid{position:relative; margin-top:22px; border-radius:12px; overflow:hidden; background:#000; aspect-ratio:16/9}
+.vid .frame{position:absolute; left:0; right:0; top:-70px; bottom:-70px; pointer-events:none}
+.vid .frame iframe,.vid .frame>div{width:100%; height:100%; border:0; display:block}
+.vid .shield{position:absolute; inset:0; cursor:pointer}
+.vid .cover{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:rgba(0,0,0,.78); color:#fff; font-size:.9rem; font-weight:500; transition:opacity .25s}
+.vid .cover.start,.vid .cover.ended{background:#000}
+.vid .cover.hide{opacity:0; pointer-events:none}
+.play-btn{width:64px; height:64px; border-radius:50%; background:#fff; color:#000; border:0; display:grid; place-items:center; cursor:pointer; transition:transform .15s}
+.play-btn:hover{transform:scale(1.05)}
+.vbar{height:3px; background:var(--line); border-radius:3px; margin-top:12px; overflow:hidden}
+.vbar i{display:block; height:100%; width:0; background:var(--ink); transition:width .5s linear}
+.vmeta{display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums}
+
 footer{margin-top:auto; padding-top:28px; text-align:center; font-size:.78rem; color:var(--muted)}
 
 @media (max-width:480px){
@@ -278,8 +292,87 @@ function analyzing(){
     const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1-p, 2), v = Math.round(e*100);
     $("#pct").textContent = v + "%"; $("#trk").style.width = v + "%";
     rows.forEach((r,k) => r.classList.toggle("on", e >= (k+1)/(rows.length+1)));
-    p < 1 ? requestAnimationFrame(tick) : setTimeout(capture, 350);
+    p < 1 ? requestAnimationFrame(tick) : setTimeout(resultVideo, 350);
   })(t0);
+}
+
+const VIDEO_ID = "Bo6cJlJ68Po";
+function loadYT(cb){
+  if(window.YT && YT.Player) return cb();
+  const prev = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = () => { prev && prev(); cb(); };
+  if(!document.getElementById("yt-api")){
+    const s = document.createElement("script"); s.id = "yt-api"; s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+  }
+}
+const fmtT = s => { s = Math.max(0, Math.floor(s||0)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
+const PLAY_ICON = `<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M7 4.5v13l11-6.5z" fill="currentColor"/></svg>`;
+
+function resultVideo(){
+  swap(`
+    <span class="tag">Seu resultado</span>
+    <h2>Assista ao seu resultado</h2>
+    <p class="sub">O botão para receber o minicurso é liberado quando o vídeo terminar.</p>
+    <div class="vid">
+      <div class="frame"><div id="yt"></div></div>
+      <div class="shield" id="shield"></div>
+      <div class="cover start" id="cover"><button class="play-btn" id="play" aria-label="Assistir">${PLAY_ICON}</button><span id="ctext">Assistir resultado</span></div>
+    </div>
+    <div class="vbar"><i id="vprog"></i></div>
+    <div class="vmeta"><span id="vtime">0:00</span><span id="vdur"></span></div>
+    <button class="btn" id="unlock" disabled>Disponível ao final do vídeo</button>`);
+
+  const cover = $("#cover"), ctext = $("#ctext"), shield = $("#shield"), btn = $("#unlock");
+  let player, maxT = 0, timer, unlocked = false, started = false;
+
+  const unlock = () => {
+    if(unlocked) return; unlocked = true;
+    btn.disabled = false; btn.innerHTML = `Receber o minicurso ${ARROW}`;
+    btn.onclick = () => { clearInterval(timer); try{ player && player.destroy(); }catch(e){} capture(); };
+  };
+  const setCover = (cls, text) => { cover.className = "cover " + cls; ctext.textContent = text; };
+
+  const tick = () => {
+    if(!player || !player.getCurrentTime) return;
+    const t = player.getCurrentTime(), d = player.getDuration() || 0;
+    if(t > maxT + 1.5){ player.seekTo(maxT, true); return; }   // impede pular
+    maxT = Math.max(maxT, t);
+    if(d){ $("#vprog").style.width = (maxT/d*100) + "%"; $("#vdur").textContent = fmtT(d); }
+    $("#vtime").textContent = fmtT(t);
+  };
+
+  const play = () => {
+    if(!player || !player.playVideo) return;
+    player.playVideo();
+    setTimeout(() => {   // celular que bloqueia o play: deixa tocar direto no vídeo
+      if(player.getPlayerState && player.getPlayerState() !== 1){ cover.classList.add("hide"); shield.style.pointerEvents = "none"; }
+    }, 1500);
+  };
+  $("#play").onclick = play;
+  shield.onclick = () => { if(player && player.getPlayerState() === 1) player.pauseVideo(); };
+
+  const failSafe = setTimeout(() => { if(!player || !player.getPlayerState) unlock(); }, 10000);
+
+  loadYT(() => {
+    player = new YT.Player("yt", {
+      host: "https://www.youtube-nocookie.com",
+      videoId: VIDEO_ID,
+      playerVars: { controls:0, disablekb:1, modestbranding:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, cc_load_policy:0, origin:location.origin },
+      events: {
+        onReady: () => { clearTimeout(failSafe); timer = setInterval(tick, 400); },
+        onStateChange: e => {
+          if(e.data === 1){ started = true; cover.classList.add("hide"); shield.style.pointerEvents = ""; }
+          if(e.data === 2) setCover("paused", "Continuar assistindo");
+          if(e.data === 0){
+            const d = player.getDuration() || 0;
+            if(maxT >= d - 3){ setCover("ended", "Vídeo concluído"); $("#play").style.display = "none"; $("#vprog").style.width = "100%"; unlock(); }
+            else { player.seekTo(maxT, true); }
+          }
+        },
+        onError: () => { clearTimeout(failSafe); unlock(); }
+      }
+    });
+  });
 }
 
 function maskPhone(v){
@@ -292,12 +385,12 @@ function maskPhone(v){
 
 function capture(){
   swap(`
-    <span class="tag">Plano pronto</span>
-    <h2>Seu diagnóstico está pronto.</h2>
-    <p class="sub">Informe seus dados para receber o plano completo no WhatsApp.</p>
+    <span class="tag">Quase lá</span>
+    <h2>Para onde envio o minicurso?</h2>
+    <p class="sub">Informe seus dados para receber o minicurso no WhatsApp.</p>
     <div class="field"><label for="nome">Nome</label><input class="input" id="nome" autocomplete="name" placeholder="Seu nome completo"><div class="err" id="e-nome"></div></div>
     <div class="field"><label for="whats">WhatsApp</label><input class="input" id="whats" inputmode="tel" autocomplete="tel-national" placeholder="(11) 99999-9999"><div class="err" id="e-whats"></div></div>
-    <button class="btn" id="send">Receber meu plano ${ARROW}</button>
+    <button class="btn" id="send">Receber o minicurso ${ARROW}</button>
     <div class="secure"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5" width="8" height="6" rx="1.2" fill="none" stroke="currentColor"/><path d="M4 5V3.6a2 2 0 014 0V5" fill="none" stroke="currentColor"/></svg>Seus dados não são compartilhados.</div>`);
   const n = $("#nome"), w = $("#whats");
   w.oninput = () => { w.value = maskPhone(w.value); w.removeAttribute("aria-invalid"); $("#e-whats").textContent=""; };
@@ -322,7 +415,7 @@ function submit(){
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
   swap(`
     <span class="tag">Último passo</span>
-    <h2>${esc(nome.split(" ")[0])}, toque no botão para receber seu plano.</h2>
+    <h2>${esc(nome.split(" ")[0])}, toque no botão para receber o minicurso.</h2>
     <p class="sub">Sua conversa no WhatsApp já vai aberta com a mensagem pronta. É só enviar.</p>
     <a class="btn" href="${url}" target="_blank" rel="noopener">Abrir WhatsApp ${ARROW}</a>`);
 }
