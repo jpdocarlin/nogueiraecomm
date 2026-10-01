@@ -6,6 +6,9 @@
 <title>Diagnóstico — Jp Nogueira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.youtube-nocookie.com">
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -297,6 +300,8 @@ function analyzing(){
 }
 
 const VIDEO_ID = "Bo6cJlJ68Po";
+const WA_MSG = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre";
+const WA_URL = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(WA_MSG)}`;
 function loadYT(cb){
   if(window.YT && YT.Player) return cb();
   const prev = window.onYouTubeIframeAPIReady;
@@ -316,7 +321,7 @@ function resultVideo(){
     <div class="vid">
       <div class="frame"><div id="yt"></div></div>
       <div class="shield" id="shield"></div>
-      <div class="cover start" id="cover"><button class="play-btn" id="play" aria-label="Assistir">${PLAY_ICON}</button><span id="ctext">Assistir resultado</span></div>
+      <div class="cover start" id="cover"><button class="play-btn" id="play" aria-label="Assistir">${PLAY_ICON}</button><span id="ctext">Carregando vídeo…</span></div>
     </div>
     <div class="vbar"><i id="vprog"></i></div>
     <div class="vmeta"><span id="vtime">0:00</span><span id="vdur"></span></div>
@@ -328,7 +333,7 @@ function resultVideo(){
   const unlock = () => {
     if(unlocked) return; unlocked = true;
     btn.disabled = false; btn.innerHTML = `Receber o minicurso ${ARROW}`;
-    btn.onclick = () => { clearInterval(timer); try{ player && player.destroy(); }catch(e){} capture(); };
+    btn.onclick = () => { try{ player && player.pauseVideo(); }catch(e){} location.href = WA_URL; };
   };
   const setCover = (cls, text) => { cover.className = "cover " + cls; ctext.textContent = text; };
 
@@ -341,8 +346,9 @@ function resultVideo(){
     $("#vtime").textContent = fmtT(t);
   };
 
+  let wantPlay = false;
   const play = () => {
-    if(!player || !player.playVideo) return;
+    if(!player || !player.playVideo){ wantPlay = true; return; }
     player.playVideo();
     setTimeout(() => {   // celular que bloqueia o play: deixa tocar direto no vídeo
       if(player.getPlayerState && player.getPlayerState() !== 1){ cover.classList.add("hide"); shield.style.pointerEvents = "none"; }
@@ -359,7 +365,7 @@ function resultVideo(){
       videoId: VIDEO_ID,
       playerVars: { controls:0, disablekb:1, modestbranding:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, cc_load_policy:0, origin:location.origin },
       events: {
-        onReady: () => { clearTimeout(failSafe); timer = setInterval(tick, 400); },
+        onReady: () => { clearTimeout(failSafe); timer = setInterval(tick, 400); if(!started) ctext.textContent = "Assistir resultado"; if(wantPlay) play(); },
         onStateChange: e => {
           if(e.data === 1){ started = true; cover.classList.add("hide"); shield.style.pointerEvents = ""; }
           if(e.data === 2) setCover("paused", "Continuar assistindo");
@@ -428,6 +434,7 @@ document.addEventListener("keydown", e => {
 });
 
 intro();
+setTimeout(() => loadYT(() => {}), 800);   // pré-carrega o player do vídeo
 </script>
 </body>
 </html>
