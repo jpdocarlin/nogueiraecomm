@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aula gratuita — Jp Nogueira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.youtube-nocookie.com">
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#EDEDED; --card:#FFFFFF; --ink:#000; --ink-2:#3A3A3A; --muted:#7A7A7A; --line:#DCDCDC; --soft:#F5F5F5; --on-ink:#FFF;
+  --font:"Geist","Helvetica Neue",Helvetica,Arial,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page:#000; --card:#141414; --ink:#FFF; --ink-2:#C8C8C8; --muted:#8A8A8A; --line:#2A2A2A; --soft:#1C1C1C; --on-ink:#000; } }
+:root[data-theme="dark"]{ --page:#000; --card:#141414; --ink:#FFF; --ink-2:#C8C8C8; --muted:#8A8A8A; --line:#2A2A2A; --soft:#1C1C1C; --on-ink:#000; }
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; min-height:100%; background:var(--page); color:var(--ink); font-family:var(--font); line-height:1.5; -webkit-font-smoothing:antialiased}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--ink); outline-offset:3px}
+
+.wrap{max-width:820px; margin:0 auto; padding:24px 18px 56px; min-height:100vh; display:flex; flex-direction:column}
+header{display:flex; align-items:center; gap:10px; font-weight:600; font-size:.95rem}
+header i{width:22px; height:22px; border-radius:5px; background:var(--ink); color:var(--on-ink); display:grid; place-items:center; font-style:normal; font-size:.7rem}
+.tag{display:inline-block; font-size:.8rem; font-weight:500; color:var(--ink-2); background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; margin:32px 0 14px}
+h1{margin:0; font-size:clamp(1.7rem,5vw,2.6rem); line-height:1.08; font-weight:600; letter-spacing:-.03em; max-width:22ch}
+.sub{color:var(--muted); margin:12px 0 0; max-width:52ch}
+
+/* Player */
+.vid{position:relative; margin-top:26px; border-radius:14px; overflow:hidden; background:#000; aspect-ratio:16/9; -webkit-touch-callout:none; user-select:none}
+.vid .frame{position:absolute; left:0; right:0; top:-70px; bottom:-70px}
+.vid .frame iframe,.vid .frame>div{width:100%; height:100%; border:0; display:block}
+.vid .shield{position:absolute; inset:0; display:none; cursor:pointer}
+.vid.live .shield{display:block}
+.vid.live .frame{pointer-events:none}
+.vid .cover{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#fff; font-size:.92rem; font-weight:500; text-align:center; padding:16px; background:rgba(0,0,0,.72); transition:opacity .25s}
+.vid .cover.start,.vid .cover.ended{background:#000 center/cover no-repeat}
+.vid .cover.start{pointer-events:none}            /* 1º toque vai direto pro vídeo: libera o play no iPhone e Android */
+.vid .cover.hide{opacity:0; pointer-events:none}
+.vid .cover .shade{position:absolute; inset:0; background:rgba(0,0,0,.55)}
+.vid .cover > :not(.shade){position:relative}
+.play{width:68px; height:68px; border-radius:50%; background:#fff; color:#000; border:0; display:grid; place-items:center; cursor:pointer}
+.spin{width:28px; height:28px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.meta{display:flex; align-items:center; gap:12px; margin-top:12px}
+.track{flex:1; height:4px; background:var(--line); border-radius:4px; overflow:hidden}
+.track i{display:block; height:100%; width:0; background:var(--ink); transition:width .4s linear}
+.time{font-size:.8rem; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+.note{font-size:.85rem; color:var(--muted); margin-top:14px}
+
+.cta{display:none; margin-top:22px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px}
+.cta.on{display:block; animation:rise .4s ease both}
+@keyframes rise{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+.cta h2{margin:0; font-size:1.2rem; font-weight:600; letter-spacing:-.015em}
+.cta p{margin:6px 0 0; color:var(--muted); font-size:.92rem}
+.btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; margin-top:16px; background:var(--ink); color:var(--on-ink); border-radius:10px; padding:15px 20px; font-weight:500; text-decoration:none}
+
+footer{margin-top:auto; padding-top:36px; text-align:center; font-size:.78rem; color:var(--muted)}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><i>JN</i>Jp Nogueira</header>
+
+  <span class="tag">Aula gratuita</span>
+  <h1>Como vender na Shopee e no Mercado Livre sem estoque, pelo celular</h1>
+  <p class="sub">Assista até o final: no fim eu explico o projeto que eu vou fazer junto com você.</p>
+
+  <div class="vid" id="vid">
+    <div class="frame"><div id="yt"></div></div>
+    <div class="shield" id="shield"></div>
+    <div class="cover start" id="cover">
+      <div class="shade"></div>
+      <div id="cicon"><div class="spin"></div></div>
+      <span id="ctext">Carregando a aula…</span>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="track"><i id="prog"></i></div>
+    <span class="time" id="time">0:00</span>
+  </div>
+  <p class="note" id="note">Você pode pausar quando quiser. Se sair da página, a aula continua de onde parou.</p>
+
+  <div class="cta" id="cta">
+    <h2>Aula concluída 🎉</h2>
+    <p>Agora volta no WhatsApp e me manda uma mensagem falando que assistiu. Eu te explico como entrar no projeto.</p>
+    <a class="btn" id="wa" href="#" target="_blank" rel="noopener">Voltar pro WhatsApp →</a>
+  </div>
+
+  <footer>© Jp Nogueira</footer>
+</div>
+
+<script>
+const CONFIG = {
+  videoId: "X1PDbraoSIQ",
+  whatsapp: "",              // número do agente (DDI+DDD+número). Vazio = botão abre o WhatsApp sem número
+  mensagem: "Assisti a aula!"
+};
+
+const $ = id => document.getElementById(id);
+const vid = $("vid"), cover = $("cover"), cicon = $("cicon"), ctext = $("ctext");
+const KEY = "aula:" + CONFIG.videoId;
+const PLAY = `<button class="play" id="playbtn" aria-label="Continuar"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>`;
+const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+
+let saved = 0;
+try { saved = Number(localStorage.getItem(KEY)) || 0; } catch (e) {}
+let maxT = saved, player = null, ready = false, done = false, lastSave = 0;
+
+cover.style.backgroundImage = `url(https://i.ytimg.com/vi/${CONFIG.videoId}/hqdefault.jpg)`;
+$("wa").href = CONFIG.whatsapp
+  ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(CONFIG.mensagem)}`
+  : `https://wa.me/?text=${encodeURIComponent(CONFIG.mensagem)}`;
+
+function setCover(mode, text, withButton){
+  cover.className = "cover " + mode;
+  ctext.textContent = text;
+  cicon.innerHTML = withButton ? PLAY : "";
+  const b = document.getElementById("playbtn");
+  if (b) b.onclick = (e) => { e.stopPropagation(); resume(); };
+}
+
+// Estado inicial: o toque passa direto pro player (exigência do iPhone/Android)
+function startMode(text){
+  vid.classList.remove("live");
+  setCover("start", text, true);
+}
+
+function resume(){
+  if (!player || !player.playVideo) return;
+  player.playVideo();
+  // Se o celular bloquear o play feito pelo botão, o próximo toque vai direto no vídeo
+  setTimeout(() => {
+    const st = player.getPlayerState ? player.getPlayerState() : -1;
+    if (st !== 1 && st !== 3 && !done) startMode("Toque no vídeo para continuar");
+  }, 1300);
+}
+
+function unlock(){
+  done = true;
+  setCover("ended", "Aula concluída ✓", false);
+  $("prog").style.width = "100%";
+  $("cta").classList.add("on");
+  $("note").style.display = "none";
+  try { localStorage.setItem(KEY, String(maxT)); } catch (e) {}
+}
+
+function tick(){
+  if (!player || !player.getCurrentTime) return;
+  const t = player.getCurrentTime(), d = player.getDuration() || 0;
+  if (t > maxT + 1.5) { player.seekTo(maxT, true); return; } // impede adiantar
+  maxT = Math.max(maxT, t);
+  if (d) $("prog").style.width = Math.min(100, maxT / d * 100) + "%";
+  $("time").textContent = d ? `${fmt(t)} / ${fmt(d)}` : fmt(t);
+  if (Date.now() - lastSave > 4000) { lastSave = Date.now(); try { localStorage.setItem(KEY, String(maxT)); } catch (e) {} }
+}
+
+$("shield").addEventListener("click", () => {
+  if (player && player.getPlayerState && player.getPlayerState() === 1) player.pauseVideo();
+});
+vid.addEventListener("contextmenu", e => e.preventDefault());
+
+function loadYT(cb){
+  if (window.YT && YT.Player) return cb();
+  window.onYouTubeIframeAPIReady = cb;
+  const s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = () => { setCover("ended", "Não foi possível carregar a aula. Recarregue a página.", false); };
+  document.head.appendChild(s);
+}
+
+loadYT(() => {
+  player = new YT.Player("yt", {
+    host: "https://www.youtube-nocookie.com",
+    videoId: CONFIG.videoId,
+    playerVars: {
+      controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1,
+      iv_load_policy: 3, fs: 0, cc_load_policy: 0, origin: location.origin,
+      start: Math.floor(saved > 5 ? saved : 0)
+    },
+    events: {
+      onReady: () => {
+        ready = true;
+        setInterval(tick, 400);
+        const d = player.getDuration() || 0;
+        if (d && saved >= d - 3) { maxT = saved; unlock(); return; }
+        startMode(saved > 5 ? `Continuar de onde parou (${fmt(saved)})` : "Toque para assistir");
+      },
+      onStateChange: e => {
+        if (done && e.data !== 1) return;
+        if (e.data === 1) { vid.classList.add("live"); cover.classList.add("hide"); }
+        if (e.data === 2) { vid.classList.add("live"); setCover("paused", "Pausado", true); }
+        if (e.data === 0) {
+          const d = player.getDuration() || 0;
+          if (maxT >= d - 3) unlock(); else player.seekTo(maxT, true);
+        }
+      },
+      onError: () => { setCover("ended", "Não foi possível carregar a aula. Recarregue a página.", false); }
+    }
+  });
+});
+</script>
+</body>
+</html>
