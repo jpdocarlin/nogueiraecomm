@@ -61,6 +61,17 @@ h1{margin:0; font-size:clamp(1.7rem,5vw,2.6rem); line-height:1.08; font-weight:6
 .cta p{margin:6px 0 0; color:var(--muted); font-size:.92rem}
 .btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; margin-top:16px; background:var(--ink); color:var(--on-ink); border-radius:10px; padding:15px 20px; font-weight:500; text-decoration:none}
 
+/* Tela cheia */
+.fsbtn{display:flex; align-items:center; gap:6px; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:8px; padding:6px 10px; font-size:.8rem; cursor:pointer; white-space:nowrap}
+.vid .exitfs{position:absolute; top:calc(12px + env(safe-area-inset-top,0px)); right:12px; z-index:3; display:none; background:rgba(0,0,0,.6); color:#fff; border:0; border-radius:999px; padding:8px 14px; font-size:.85rem; cursor:pointer}
+.vid:fullscreen{border-radius:0; aspect-ratio:auto; width:100%; height:100%}
+.vid:-webkit-full-screen{border-radius:0; aspect-ratio:auto; width:100%; height:100%}
+.vid:fullscreen .exitfs{display:block}
+.vid:-webkit-full-screen .exitfs{display:block}
+.vid.pfs{position:fixed; inset:0; z-index:50; margin:0; border-radius:0; aspect-ratio:auto; width:100vw; height:100vh; height:100dvh}
+.vid.pfs .exitfs{display:block}
+body.pfs-on{overflow:hidden}
+
 footer{margin-top:auto; padding-top:36px; text-align:center; font-size:.78rem; color:var(--muted)}
 @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
@@ -81,11 +92,13 @@ footer{margin-top:auto; padding-top:36px; text-align:center; font-size:.78rem; c
       <div id="cicon"><div class="spin"></div></div>
       <span id="ctext">Carregando a aula…</span>
     </div>
+    <button class="exitfs" id="exitfs">✕ Sair da tela cheia</button>
   </div>
 
   <div class="meta">
     <div class="track"><i id="prog"></i></div>
     <span class="time" id="time">0:00</span>
+    <button class="fsbtn" id="fsbtn" aria-label="Assistir em tela cheia"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Tela cheia</button>
   </div>
   <p class="note" id="note">Você pode pausar quando quiser. Se sair da página, a aula continua de onde parou.</p>
 
@@ -167,6 +180,29 @@ $("shield").addEventListener("click", () => {
   if (player && player.getPlayerState && player.getPlayerState() === 1) player.pauseVideo();
 });
 vid.addEventListener("contextmenu", e => e.preventDefault());
+
+// Tela cheia: nativa no computador e Android; no iPhone, ocupa a tela inteira da página
+function pseudoFs(on){ vid.classList.toggle("pfs", on); document.body.classList.toggle("pfs-on", on); }
+function enterFs(){
+  const req = vid.requestFullscreen || vid.webkitRequestFullscreen;
+  if (!req) return pseudoFs(true);
+  try {
+    Promise.resolve(req.call(vid)).then(() => {
+      try { screen.orientation.lock("landscape").catch(() => {}); } catch (e) {}
+    }).catch(() => pseudoFs(true));
+  } catch (e) { pseudoFs(true); }
+}
+function exitFs(){
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    const ex = document.exitFullscreen || document.webkitExitFullscreen;
+    try { ex.call(document); } catch (e) {}
+  }
+  pseudoFs(false);
+  try { screen.orientation.unlock(); } catch (e) {}
+}
+$("fsbtn").addEventListener("click", enterFs);
+$("exitfs").addEventListener("click", e => { e.stopPropagation(); exitFs(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") pseudoFs(false); });
 
 function loadYT(cb){
   if (window.YT && YT.Player) return cb();
