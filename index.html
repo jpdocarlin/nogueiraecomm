@@ -158,6 +158,14 @@ footer{margin-top:auto; padding-top:28px; text-align:center; font-size:.78rem; c
 }
 @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+fbq("init","1124003860437897");
+fbq("track","PageView");
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1124003860437897&ev=PageView&noscript=1"/></noscript>
+<!-- /Meta Pixel -->
 </head>
 <body>
 <div class="wrap">
@@ -284,6 +292,7 @@ function go(i){ state.i = i; i < total ? question() : analyzing(); }
 
 function analyzing(){
   state.i = total;
+  try{ fbq("trackCustom","DiagnosticoConcluido"); }catch(e){}
   swap(`
     <span class="tag">Analisando</span>
     <div class="pct" id="pct">0%</div>
@@ -414,10 +423,11 @@ function submit(){
   if(digits.length < 10){ w.setAttribute("aria-invalid","true"); $("#e-whats").textContent = "Informe o WhatsApp com DDD."; ok = false; }
   if(!ok){ view.querySelector('[aria-invalid="true"]').focus(); return; }
 
+  try{ fbq("track","Lead"); }catch(e){}
   const payload = { nome, whatsapp:w.value, ...state.a, utm, enviadoEm:new Date().toISOString() };
   if(CONFIG.webhookUrl){ try{ fetch(CONFIG.webhookUrl,{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify(payload)}).catch(()=>{}); }catch(e){} }
 
-  const msg = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre";
+  const msg = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre\n\nMeu diagnóstico: " + QUESTIONS.map(q => q.tag + ": " + state.a[q.id]).join(" | ");
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
   swap(`
     <span class="tag">Último passo</span>
