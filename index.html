@@ -307,7 +307,7 @@ function analyzing(){
     const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1-p, 2), v = Math.round(e*100);
     $("#pct").textContent = v + "%"; $("#trk").style.width = v + "%";
     rows.forEach((r,k) => r.classList.toggle("on", e >= (k+1)/(rows.length+1)));
-    p < 1 ? requestAnimationFrame(tick) : setTimeout(resultVideo, 350);
+    p < 1 ? requestAnimationFrame(tick) : setTimeout(goWhats, 350);
   })(t0);
 }
 
@@ -413,6 +413,19 @@ function capture(){
   [n,w].forEach(el => el.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); submit(); } }));
   $("#send").onclick = submit;
   n.focus({preventScroll:true});
+}
+
+// Teste 17/11: depois das perguntas, vai direto pro WhatsApp (sem vídeo e sem formulário)
+function goWhats(){
+  const msg = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre\n\nMeu diagnóstico: " + QUESTIONS.map(q => q.tag + ": " + state.a[q.id]).join(" | ");
+  const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  swap(`
+    <span class="tag">Diagnóstico pronto</span>
+    <h2>Seu diagnóstico está pronto. Toque no botão para receber no WhatsApp.</h2>
+    <p class="sub">A conversa já abre com a mensagem pronta. É só enviar.</p>
+    <a class="btn" id="gowa" href="${url}" target="_blank" rel="noopener">Receber no WhatsApp ${ARROW}</a>`);
+  let sent = false;
+  $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; try{ fbq("track","Lead"); }catch(e){} });
 }
 
 function submit(){
