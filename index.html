@@ -418,7 +418,8 @@ function capture(){
 // Teste 17/11: depois das perguntas, vai direto pro WhatsApp (sem vídeo e sem formulário)
 function goWhats(){
   const msg = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre\n\nMeu diagnóstico: " + QUESTIONS.map(q => q.tag + ": " + state.a[q.id]).join(" | ");
-  const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  const ref = String(utm.utm_content || "").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,20);
+  const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg + (ref ? "\n\nref: " + ref : ""))}`;
   swap(`
     <span class="tag">Diagnóstico pronto</span>
     <h2>Seu diagnóstico está pronto. Toque no botão para receber no WhatsApp.</h2>
