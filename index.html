@@ -166,6 +166,9 @@ fbq("track","PageView");
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1124003860437897&ev=PageView&noscript=1"/></noscript>
 <!-- /Meta Pixel -->
+<!-- Vercel Web Analytics: contador de visitas e etapas por ref -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -211,6 +214,10 @@ const view = $("#view");
 const total = QUESTIONS.length;
 const state = { i:-1, a:{} };
 const utm = Object.fromEntries([...new URLSearchParams(location.search)].filter(([k]) => k.startsWith("utm_")));
+// Contador por origem (18/11): registra só o ref e a etapa, sem dado pessoal
+const REF = String(utm.utm_content || "").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,20) || "sem-ref";
+function vaEvent(name){ try{ window.va("event", { name: name, data: { ref: REF } }); }catch(e){} }
+vaEvent("1 Abriu o diagnostico");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function progress(){
@@ -292,7 +299,7 @@ function go(i){ state.i = i; i < total ? question() : analyzing(); }
 
 function analyzing(){
   state.i = total;
-  try{ fbq("trackCustom","DiagnosticoConcluido"); }catch(e){}
+  try{ (vaEvent("2 Concluiu as perguntas"), fbq("trackCustom","DiagnosticoConcluido")); }catch(e){}
   swap(`
     <span class="tag">Analisando</span>
     <div class="pct" id="pct">0%</div>
@@ -426,7 +433,7 @@ function goWhats(){
     <p class="sub">A conversa já abre com a mensagem pronta. É só enviar.</p>
     <a class="btn" id="gowa" href="${url}" target="_blank" rel="noopener">Receber no WhatsApp ${ARROW}</a>`);
   let sent = false;
-  $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; try{ fbq("track","Lead"); }catch(e){} });
+  $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; vaEvent("3 Clicou no WhatsApp"); try{ fbq("track","Lead"); }catch(e){} });
 }
 
 function submit(){
