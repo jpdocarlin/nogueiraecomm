@@ -75,6 +75,13 @@ body.pfs-on{overflow:hidden}
 footer{margin-top:auto; padding-top:36px; text-align:center; font-size:.78rem; color:var(--muted)}
 @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+fbq("init","1124003860437897");
+fbq("track","PageView");
+</script>
+<!-- /Meta Pixel -->
 </head>
 <body>
 <div class="wrap">
@@ -127,11 +134,15 @@ const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60
 let saved = 0;
 try { saved = Number(localStorage.getItem(KEY)) || 0; } catch (e) {}
 let maxT = saved, player = null, ready = false, done = false, lastSave = 0;
+const ev = {};
+const trk = n => { try { fbq("trackCustom", n); } catch (e) {} };
 
 cover.style.backgroundImage = `url(https://i.ytimg.com/vi/${CONFIG.videoId}/hqdefault.jpg)`;
 $("wa").href = CONFIG.whatsapp
   ? `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(CONFIG.mensagem)}`
   : `https://wa.me/?text=${encodeURIComponent(CONFIG.mensagem)}`;
+
+$("wa").addEventListener("click", () => trk("VoltouWhatsApp"));
 
 function setCover(mode, text, withButton){
   cover.className = "cover " + mode;
@@ -159,6 +170,9 @@ function resume(){
 
 function unlock(){
   done = true;
+  let seen = false;
+  try { seen = localStorage.getItem(KEY + ":done") === "1"; localStorage.setItem(KEY + ":done", "1"); } catch (e) {}
+  if (!seen) trk("AulaConcluida");
   setCover("ended", "Aula concluída ✓", false);
   $("prog").style.width = "100%";
   $("cta").classList.add("on");
@@ -171,6 +185,8 @@ function tick(){
   const t = player.getCurrentTime(), d = player.getDuration() || 0;
   if (t > maxT + 1.5) { player.seekTo(maxT, true); return; } // impede adiantar
   maxT = Math.max(maxT, t);
+  if (!ev.s && t > 3) { ev.s = 1; trk("AulaIniciada"); }
+  if (!ev.h && d && maxT / d >= 0.5) { ev.h = 1; trk("AulaMetade"); }
   if (d) $("prog").style.width = Math.min(100, maxT / d * 100) + "%";
   $("time").textContent = d ? `${fmt(t)} / ${fmt(d)}` : fmt(t);
   if (Date.now() - lastSave > 4000) { lastSave = Date.now(); try { localStorage.setItem(KEY, String(maxT)); } catch (e) {} }
