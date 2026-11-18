@@ -186,7 +186,7 @@ function tick(){
   if (t > maxT + 1.5) { player.seekTo(maxT, true); return; } // impede adiantar
   maxT = Math.max(maxT, t);
   if (!ev.s && t > 3) { ev.s = 1; trk("AulaIniciada"); }
-  if (!ev.h && d && maxT / d >= 0.5) { ev.h = 1; trk("AulaMetade"); }
+  if (!ev.h && d && maxT / d >= 0.5) { ev.h = 1; trk("AulaMetade"); $("cta").classList.add("on"); }
   if (d) $("prog").style.width = Math.min(100, maxT / d * 100) + "%";
   $("time").textContent = d ? `${fmt(t)} / ${fmt(d)}` : fmt(t);
   if (Date.now() - lastSave > 4000) { lastSave = Date.now(); try { localStorage.setItem(KEY, String(maxT)); } catch (e) {} }
