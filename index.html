@@ -433,7 +433,7 @@ function goWhats(){
     <p class="sub">A conversa já abre com a mensagem pronta. É só enviar.</p>
     <a class="btn" id="gowa" href="${url}" target="_blank" rel="noopener">Receber no WhatsApp ${ARROW}</a>`);
   let sent = false;
-  $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; vaEvent("3 Clicou no WhatsApp"); try{ fbq("track","Lead"); }catch(e){} try{ const qc = QUESTIONS.find(x => x.tag === "Começo"); const ac = qc ? String(state.a[qc.id] || "") : ""; if(ac && !/n[aã]o tenho/i.test(ac)) fbq("trackCustom","LeadQualificado"); }catch(e){} });
+  $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; vaEvent("3 Clicou no WhatsApp"); try{ fbq("track","Lead"); }catch(e){} });
 }
 
 function submit(){
