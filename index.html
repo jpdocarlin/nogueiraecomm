@@ -426,9 +426,9 @@ function goWhats(){
   const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg + (ref ? "\n\nref: " + ref : ""))}`;
   swap(`
     <span class="tag">Diagnóstico pronto</span>
-    <h2>Seu diagnóstico está pronto. Toque no botão para receber no WhatsApp.</h2>
+    <h2>Seu diagnóstico está pronto. Toque no botão para receber a aula gratuita no WhatsApp.</h2>
     <p class="sub">A conversa já abre com a mensagem pronta. É só enviar.</p>
-    <a class="btn" id="gowa" href="${url}" target="_blank" rel="noopener">Receber no WhatsApp ${ARROW}</a>`);
+    <a class="btn" id="gowa" href="${url}" target="_blank" rel="noopener">Receber a aula no WhatsApp ${ARROW}</a>`);
   let sent = false;
   $("#gowa").addEventListener("click", () => { if(sent) return; sent = true; vaEvent("3 Clicou no WhatsApp"); try{ fbq("track","Lead"); }catch(e){} });
 }
