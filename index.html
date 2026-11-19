@@ -194,18 +194,18 @@ const FLOW = `<div class="flow"><div><b>Fornecedor</b><span>guarda e envia</span
 const NOTIF = `<div class="notif"><div class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.3l3 3 6-6.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div><div><b>Você vendeu!</b><span>Luminária LED de Mesa</span></div><em>agora</em></div>`;
 
 const QUESTIONS = [
-  { id:"perfil", tag:"Perfil", q:"Você já vende pela internet hoje?", visual:NOTIF,
-    options:["Nunca vendi","Já tentei e parei","Vendo, mas pouco","Vendo bem e quero escalar"] },
-  { id:"trava", tag:"Trava", q:"O que mais te trava hoje?", visual:FLOW,
-    options:["Não tenho fornecedor","Não tenho dinheiro pra estoque","Não sei abrir e configurar a loja","Anuncio, mas não vende"] },
-  { id:"canal", tag:"Canal", q:"Onde você quer vender?", visual:`<div class="chips"><span>Mercado Livre</span><span>Shopee</span></div>`,
-    options:["Mercado Livre","Shopee","Nos dois"] },
-  { id:"tempo", tag:"Tempo", q:"Quanto tempo por dia você consegue dedicar?", visual:`<p class="note">Poucas horas por dia, bem usadas.</p>`,
+  { id:"perfil", tag:"Perfil", q:"Você já vendeu alguma coisa pela internet?", visual:NOTIF,
+    options:["Nunca vendi nada","Já tentei, mas não deu certo","Vendo de vez em quando","Já vendo e quero vender mais"] },
+  { id:"objetivo", tag:"Objetivo", q:"O que você busca com isso?", visual:FLOW,
+    options:["Uma renda extra todo mês","Ter um negócio meu","Sair do meu emprego","Complementar a aposentadoria"] },
+  { id:"trava", tag:"Trava", q:"O que mais te atrapalhou até hoje?", visual:FLOW,
+    options:["Não sei por onde começar","Não tenho de quem comprar os produtos","Não tenho dinheiro pra comprar estoque","Tenho medo de perder dinheiro","Já anunciei e não vendeu"] },
+  { id:"tempo", tag:"Tempo", q:"Quanto tempo livre você tem por dia?", visual:`<p class="note">Poucas horas por dia, bem usadas.</p>`,
     options:["Menos de 1 hora","De 1 a 2 horas","3 horas ou mais"] },
-  { id:"comeco", tag:"Começo", q:"Quanto você consegue investir pra começar?", sub:"Com fornecedor, sistema e o resto da estrutura pra loja rodar.",
-    options:["+ de R$ 300","+ de R$ 500","+ de R$ 2 mil","Não tenho agora"] },
-  { id:"setup", tag:"Setup", q:"Você tem computador ou notebook?", visual:FLOW,
-    options:["Tenho, uso todo dia","Tenho, mas uso pouco","Só celular"] }
+  { id:"comeco", tag:"Começo", q:"Quanto você consegue separar hoje pra começar?", sub:"É para o sistema e os primeiros pedidos. Você não precisa comprar estoque.",
+    options:["Até R$ 300","De R$ 300 a R$ 1.000","Mais de R$ 1.000","Nada no momento"] },
+  { id:"setup", tag:"Setup", q:"Você usa computador ou só o celular?", visual:FLOW,
+    options:["Uso computador ou notebook","Tenho computador, mas quase não uso","Só uso o celular"] }
 ];
 /* ================================ */
 
