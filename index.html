@@ -47,9 +47,9 @@ h1{font-size:clamp(2rem,6vw,2.75rem); line-height:1.05}
 h2{font-size:clamp(1.5rem,4.5vw,1.9rem); line-height:1.15}
 .sub{color:var(--ink-2); font-size:1.1rem; line-height:1.45; margin:14px 0 0; max-width:46ch}
 .intro-h{font-size:clamp(1.7rem,5.4vw,2.4rem); line-height:1.1}
-.vid{position:relative; width:46%; max-width:176px; aspect-ratio:1; margin:0 0 16px; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--soft)}
-.vid video{width:100%; height:100%; object-fit:cover; display:block; cursor:pointer}
-.vid-s{position:absolute; left:6px; right:6px; bottom:6px; font:inherit; font-size:.8rem; font-weight:500; color:#fff; background:rgba(0,0,0,.62); border:0; border-radius:999px; padding:5px 8px; cursor:pointer}
+.ivid{position:relative; width:46%; max-width:176px; aspect-ratio:1/1; height:auto; margin:0 0 16px; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--soft)}
+.ivid video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; aspect-ratio:auto}
+.ivid-s{position:absolute; left:6px; right:6px; bottom:6px; font:inherit; font-size:.8rem; font-weight:500; color:#fff; background:rgba(0,0,0,.62); border:0; border-radius:999px; padding:5px 8px; cursor:pointer}
 
 /* Antes / Hoje — sequência de abertura */
 .story{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:26px; position:relative}
@@ -239,7 +239,7 @@ function intro(){
   state.i = -1;
   swap(`
     <span class="tag hl">Diagnóstico gratuito</span>
-    <div class="vid hl"><video id="iv" src="galpao.mp4" poster="galpao.jpg" autoplay muted loop playsinline preload="metadata"></video><button type="button" class="vid-s" id="ivb">Toque para ouvir</button></div>
+    <div class="ivid hl"><video id="iv" src="galpao.mp4" poster="galpao.jpg" autoplay muted loop playsinline preload="metadata"></video><button type="button" class="ivid-s" id="ivb">Toque para ouvir</button></div>
     <h1 class="hl intro-h">Descubra em 1 minuto o que falta pra você vender na Shopee e no Mercado Livre sem comprar estoque</h1>
     <p class="sub hl d2">São 6 perguntas rápidas. No final você recebe a aula gratuita no WhatsApp.</p>
     <div class="cta-in">
