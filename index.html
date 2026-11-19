@@ -47,6 +47,9 @@ h1{font-size:clamp(2rem,6vw,2.75rem); line-height:1.05}
 h2{font-size:clamp(1.5rem,4.5vw,1.9rem); line-height:1.15}
 .sub{color:var(--ink-2); font-size:1.1rem; line-height:1.45; margin:14px 0 0; max-width:46ch}
 .intro-h{font-size:clamp(1.7rem,5.4vw,2.4rem); line-height:1.1}
+.vid{position:relative; width:46%; max-width:176px; aspect-ratio:1; margin:0 0 16px; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--soft)}
+.vid video{width:100%; height:100%; object-fit:cover; display:block; cursor:pointer}
+.vid-s{position:absolute; left:6px; right:6px; bottom:6px; font:inherit; font-size:.8rem; font-weight:500; color:#fff; background:rgba(0,0,0,.62); border:0; border-radius:999px; padding:5px 8px; cursor:pointer}
 
 /* Antes / Hoje — sequência de abertura */
 .story{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:26px; position:relative}
@@ -236,6 +239,7 @@ function intro(){
   state.i = -1;
   swap(`
     <span class="tag hl">Diagnóstico gratuito</span>
+    <div class="vid hl"><video id="iv" src="galpao.mp4" poster="galpao.jpg" autoplay muted loop playsinline preload="metadata"></video><button type="button" class="vid-s" id="ivb">Toque para ouvir</button></div>
     <h1 class="hl intro-h">Descubra em 1 minuto o que falta pra você vender na Shopee e no Mercado Livre sem comprar estoque</h1>
     <p class="sub hl d2">São 6 perguntas rápidas. No final você recebe a aula gratuita no WhatsApp.</p>
     <div class="cta-in">
@@ -244,6 +248,9 @@ function intro(){
     </div>
     <div class="result"><b>+ de 1.400 pedidos</b><i></i><small>feitos numa loja minha</small></div>`);
   requestAnimationFrame(() => view.classList.add("play"));
+  const iv = $("#iv"), ivb = $("#ivb");
+  const som = () => { iv.muted = !iv.muted; if(!iv.muted){ iv.loop = false; iv.currentTime = 0; } else { iv.loop = true; } iv.play(); ivb.textContent = iv.muted ? "Toque para ouvir" : "Tocando com som"; };
+  iv.onclick = som; ivb.onclick = som;
   $("#start").onclick = () => go(0);
 }
 
