@@ -315,7 +315,7 @@ function analyzing(){
     const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1-p, 2), v = Math.round(e*100);
     $("#pct").textContent = v + "%"; $("#trk").style.width = v + "%";
     rows.forEach((r,k) => r.classList.toggle("on", e >= (k+1)/(rows.length+1)));
-    p < 1 ? requestAnimationFrame(tick) : setTimeout(goWhats, 350);
+    p < 1 ? requestAnimationFrame(tick) : setTimeout(resultVideo, 350);
   })(t0);
 }
 
@@ -338,7 +338,7 @@ function resultVideo(){
   swap(`
     <span class="tag">Seu resultado</span>
     <h2>Assista ao seu resultado</h2>
-    <p class="sub">O botão para receber o minicurso é liberado quando o vídeo terminar.</p>
+    <p class="sub">O botão para receber a aula gratuita no WhatsApp é liberado quando o vídeo terminar.</p>
     <div class="vid" id="vid">
       <div class="frame"><video id="yt" src="${VIDEO_SRC}" poster="${VIDEO_POSTER}" playsinline webkit-playsinline preload="metadata" disablepictureinpicture controlslist="nodownload noplaybackrate nofullscreen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000"></video></div>
       <div class="shield" id="shield"></div>
@@ -353,8 +353,14 @@ function resultVideo(){
 
   const unlock = () => {
     if(unlocked) return; unlocked = true;
-    btn.disabled = false; btn.innerHTML = `Receber o minicurso ${ARROW}`;
-    btn.onclick = () => { try{ player && player.pauseVideo(); }catch(e){} location.href = WA_URL; };
+    btn.disabled = false; btn.innerHTML = `Receber a aula no WhatsApp ${ARROW}`;
+    let sent = false;
+    btn.onclick = () => {
+      try{ player && player.pauseVideo(); }catch(e){}
+      if(!sent){ sent = true; vaEvent("3 Clicou no WhatsApp"); try{ fbq("track","Lead"); }catch(e){} }
+      const url = waUrl();
+      const w = window.open(url, "_blank"); if(w){ try{ w.opener = null; }catch(e){} } else location.href = url;
+    };
   };
   const setCover = (cls, text) => { cover.className = "cover " + cls; ctext.textContent = text; };
 
@@ -428,10 +434,13 @@ function capture(){
 }
 
 // Teste 17/11: depois das perguntas, vai direto pro WhatsApp (sem vídeo e sem formulário)
-function goWhats(){
+function waUrl(){
   const msg = "Opa Nogueira, respondi o formulário e quero ganhar dinheiro com Shopee e Mercado Livre\n\nMeu diagnóstico: " + QUESTIONS.map(q => q.tag + ": " + state.a[q.id]).join(" | ");
   const ref = String(utm.utm_content || "").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,20);
-  const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg + (ref ? "\n\nref: " + ref : ""))}`;
+  return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg + (ref ? "\n\nref: " + ref : ""))}`;
+}
+function goWhats(){
+  const url = waUrl();
   swap(`
     <span class="tag">Diagnóstico pronto</span>
     <h2>Seu diagnóstico está pronto. Toque no botão para receber a aula gratuita no WhatsApp.</h2>
